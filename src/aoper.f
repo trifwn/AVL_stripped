@@ -23,7 +23,6 @@ C---------------------------------------
 C     Main driver routine for AVL
 C---------------------------------------
       INCLUDE 'AVL.INC'
-      INCLUDE 'AVLPLT.INC'
       LOGICAL ERROR, LCERR, LCERRI, LWRIT, LMATCH
       LOGICAL USEMRF
 C
@@ -58,7 +57,6 @@ C
 C
  1000 FORMAT (A)
 C
-      LPLOT = .FALSE.
       LWRIT = .FALSE.
       LSOL  = .FALSE.
 C
@@ -92,7 +90,7 @@ C
      &  /'  -  delete  run case          F etch run cases from file'
      &  /'  N ame current run case       W rite forces to file     '
      & //' eX ecute run case             I nitialize variables     '
-     & //'  G eometry plot               T refftz Plane plot       '
+
      & //'  ST  stability derivatives    FT  total   forces        '
      &  /'  SB  body-axis derivatives    FN  surface forces        '
      &  /'  RE  reference quantities     FS  strip   forces        '
@@ -111,8 +109,6 @@ C   x x x x   x x   x     x x x x x   x x x   x x x x
 C
 C------------------------------------------------------
       IF    (COMAND.EQ.'    ') THEN
-       IF(LPLOT) CALL PLEND
-       LPLOT = .FALSE.
        CALL CLRZOOM
        RETURN
 C
@@ -345,16 +341,10 @@ C
         LSOL = .FALSE.
 C
 C------------------------------------------------------
-      ELSE IF(COMAND.EQ.'G   ') THEN
-C------ plot geometry
-        CALL PLOTVL(AZIMOB, ELEVOB, TILTOB, ROBINV)
-        LPLOT = .TRUE.
+
 C
 C------------------------------------------------------
-      ELSE IF(COMAND.EQ.'T   ') THEN
-C------ plot spanloadings in Trefftz plane
-        CALL PLOTTP
-        LPLOT = .TRUE.
+
 C
 C------------------------------------------------------
       ELSE IF(COMAND.EQ.'FT  ') THEN

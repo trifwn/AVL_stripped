@@ -26,8 +26,6 @@ For more specific help on this, see http://www.mingw.org/wiki/Getting_Started#to
 
 \Avl\bin\Makefile  to  Makefile.Old
 \Avl\eispack\Makefile  to  Makefile.Old
-\Avl\plotlib\config.make  to  config.make.Old
-\Avl\plotlib\examples\gridtest.f  to  gridtest.f.Old
 
 7) Place the MinGW_AVL.zip file in the C:\MinGW\msys\1.0\home\USERNAME directory.
 
@@ -38,10 +36,6 @@ For more specific help on this, see http://www.mingw.org/wiki/Getting_Started#to
 10) Start the MinGW shell.  This can be done by clicking on the Start Menu => All Programs => MinGW => MinGW Shell.
 
 11) Execute the following steps in the MinGW Shell:
-
- $ cd avl
- $ cd plotlib/mingw
- $ make             (creates libPlt.a or libPltDP.a)
 
  $ cd ../../eispack
  $ make             (creates eispack.a)

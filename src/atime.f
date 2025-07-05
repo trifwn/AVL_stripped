@@ -23,11 +23,10 @@ C---------------------------------------------
 C     Time-domain integration driver
 C---------------------------------------------
       INCLUDE 'AVL.INC'
-      INCLUDE 'AVLPLT.INC'
       LOGICAL ERROR, LOK, LWRIT, SAVED, OVERLAY
 C
       CHARACTER*1 ITEM, ANS, CHKEY
-      CHARACTER*2 OPT, CHPLOT
+      CHARACTER*2 OPT
       CHARACTER*4 COMAND, ITEMC
       CHARACTER*256 FNOUT, FNNEW, FNSYS, FNVB
       CHARACTER*80 LINE, COMARG, PROMPT, RTNEW
@@ -64,12 +63,11 @@ C---- force computation of plot limits
       FMAX = 0.
 C
 C
-      LPLOT = .FALSE.
       LWRIT = .FALSE.
 C
       FNOUT = ' '
 C
-      CHPLOT = '  '
+
 C
 c      EYEPTZ = 180.
 c      EYEPTY = 90.
@@ -113,8 +111,6 @@ C
  815  CONTINUE
 C------------------------------------------------------
       IF    (COMAND.EQ.'    ') THEN
-       IF(LPLOT) CALL PLEND
-       LPLOT = .FALSE.
        CALL CLRZOOM
        IRUN = IRUN0
        RETURN
@@ -422,15 +418,13 @@ C
 C
  100    CONTINUE
 C
-        CHPLOT = 'P '
+ 
 C
 C-------------------------------------------------------------------
 C---- Blowup window
       ELSEIF(COMAND.EQ.'B   ') THEN
-       IF(INDEX('P',CHPLOT(1:1)) .EQ. 0) THEN
-        WRITE(*,*) 'No plot to blow up'
-        GO TO 810
-       ENDIF
+       WRITE(*,*) 'Plotting not available'
+       GO TO 810
 C
        DCROSS = 2.0
        WRITE(*,*) 'Mark off corners of blowup area'
@@ -471,18 +465,12 @@ C
 C-------------------------------------------------------------------
 C---- Annotate
       ELSEIF(COMAND.EQ.'A   ') THEN
-       IF(LPLOT) THEN
-        CALL ANNOT(CH)
-       ELSE
-        WRITE(*,*) 'No active plot'
-       ENDIF
+       WRITE(*,*) 'Plotting not available'
 C
 C-------------------------------------------------------------------
 C---- Hardcopy
       ELSEIF(COMAND.EQ.'H   ') THEN
-       IF(LPLOT) CALL PLEND
-       LPLOT = .FALSE.
-       CALL REPLOT(IDEVH)
+       WRITE(*,*) 'Plotting not available'
 C
 C-------------------------------------------------------------------
 C---- write eigenvalues
@@ -540,10 +528,7 @@ C
         OVERLAY = .TRUE.
         WRITE(*,*) 'Overlay plotting enabled'
 C
-        IF(INDEX('P',CHPLOT(1:1)).NE.0) THEN
-         COMAND = CHPLOT
-         GO TO 815
-        ENDIF
+
 C
        ELSE
         WRITE(*,*) 'Overlay plotting disabled'
@@ -553,19 +538,12 @@ C
 C-------------------------------------------------------------------
 C---- Zoom in on plot
       ELSEIF(COMAND.EQ.'Z   ') THEN
-       IF(INDEX('P',CHPLOT(1:1)) .EQ. 0) THEN
-        WRITE(*,*) 'No plot to zoom'
-        GO TO 810
-       ENDIF
-C
-       CALL USETZOOM(.TRUE.,.TRUE.)
-       CALL REPLOT(IDEV)
+       WRITE(*,*) 'Plotting not available'
 C
 C-------------------------------------------------------------------
 C---- Reset zoom on plot
       ELSEIF(COMAND.EQ.'U   ') THEN
-       CALL CLRZOOM
-       CALL REPLOT(IDEV)
+       WRITE(*,*) 'Plotting not available'
 C
 C-------------------------------------------------------------------
       ELSE

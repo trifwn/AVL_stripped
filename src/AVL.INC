@@ -114,7 +114,6 @@ C
      &        LBFORCE,
      &        LNASA_SA, LSA_RATES,
      &        LMWAIT
-      LOGICAL LPPAR
       COMMON /CASE_L/
      & LGEO,   ! T if geometry exists
      & LENC,   ! T if all normal vectors are valid
@@ -136,8 +135,7 @@ C
      & LBFORCE, ! T if body forces are to be included in total forces
      & LNASA_SA,    ! T if NASA-std stability axes are to be used
      & LSA_RATES,   ! T if stability-axis rates are to be used
-     & LMWAIT,      ! T if mode display is to wait for real time
-     & LPPAR(IPMAX) ! T if parameter value is to be plotted
+     & LMWAIT      ! T if mode display is to wait for real time
 C
        COMMON /CASE_R/
      & VERSION,              ! AVL version number
@@ -191,7 +189,9 @@ C
      & CHINGE_D(NDMAX,NDMAX),          ! sens wrt control
      & CHINGE_G(NDMAX,NGMAX),          ! sens wrt design
      & DCL_A0, DCM_A0,   ! additional default CL_a, CM_a
-     & DCL_U0, DCM_U0    ! additional default CL_u, CM_u
+     & DCL_U0, DCM_U0,   ! additional default CL_u, CM_u
+     & AXMIN(3), AXMAX(3), AXDMAX,  ! axis limits for plotting
+     & AXSPAN(3), AXDEL(3), NAXANN(3)  ! axis span, delta, annotations
 C
       COMPLEX EVAL, EVEC, EVALDAT
       COMMON /CASE_Z/
@@ -395,6 +395,7 @@ C
 C
       COMMON /SOLV_I/
      & IAPIV(NVMAX)           ! pivot indices for LU solver
+      LOGICAL LPLTNEW, LTRFORCE, LSVMOV
       COMMON /SOLV_R/
      & AMACH,                 ! Mach number at which AIC matrices were computed
      & AICN(NVMAX,NVMAX),     ! normalwash AIC matrix (and VL system matrix)
@@ -409,31 +410,4 @@ C
      & WV_D(3,NVMAX,NDMAX),
      & WV_G(3,NVMAX,NGMAX)
 C
-      LOGICAL
-     & LWAKEPLT,   LLOADPLT,   LHINGEPLT,
-     & LBOUNDLEG,  LCHORDLINE, LCAMBER,   LCNTLPTS,
-     & LNRMLPLT,   LAXESPLT,   LRREFPLT,
-     & LCLPERPLT,  LDWASHPLT,  LLABSURF,   LTRFORCE,
-     & LABEL_SURF, LABEL_STRP, LABEL_VRTX, LABEL_BODY,
-     & LPLTNEW,
-     & LPLTSURF,
-     & LPLTBODY,
-     & LSVMOV
-      COMMON /PLOT_L/          ! plotting flags
-     & LWAKEPLT,   LLOADPLT,   LHINGEPLT,
-     & LBOUNDLEG,  LCHORDLINE, LCAMBER,   LCNTLPTS,
-     & LNRMLPLT,   LAXESPLT,   LRREFPLT,
-     & LCLPERPLT,  LDWASHPLT,  LLABSURF,   LTRFORCE,
-     & LABEL_SURF, LABEL_STRP, LABEL_VRTX, LABEL_BODY,
-     & LPLTNEW,
-     & LPLTSURF(NFMAX),
-     & LPLTBODY(NBMAX),
-     & LSVMOV
-      COMMON /PLOT_I/ NTRI, IMARKSURF, ICOLORSURF, NAXANN(3),
-     &                IRCOLOR(NRMAX)
-      COMMON /PLOT_R/ TRI(16,ITMAX),
-     &                AXMIN(3),AXMAX(3),AXDEL(3),AXSPAN(3),
-     &                GMIN(3),GMAX(3),GMINP(3),GMAXP(3),
-     &                VMIN(3),VMAX(3),VMINP(3),VMAXP(3),
-     &                DTMOVIE,TMOVIE, SLOMOF,
-     &                EPHASE, EIGENF, TMOFAC
+

@@ -25,7 +25,6 @@ C     See file avl_doc.txt for user guide.
 C     See file version_notes.txt for most recent changes.
 C=======================================================================
       INCLUDE 'AVL.INC'
-      INCLUDE 'AVLPLT.INC'
       LOGICAL ERROR, LINPFILE
 C
       CHARACTER*4 COMAND
@@ -70,8 +69,7 @@ C---- set basic defaults
       CALL DEFINI
       CALL MASINI
 C
-C---- initialize Xplot, and AVL plot stuff
-      CALL PLINIT
+C---- initialize AVL stuff
 C
 C
 C---- Read a new input geometry from input file
@@ -172,8 +170,7 @@ C
 C-------------------------------------------------------------------
  100  CONTINUE
 C
-C---- set up plotting parameters for geometry (if any)
-      IF(LINPFILE) CALL PLPARS
+C---- set up parameters for geometry (if any)
 C
       WRITE(*,2000) 
  2000 FORMAT(
@@ -187,7 +184,7 @@ C
      &  /'   CASE f  Read run case file'
      & //'   CINI    Clear and initialize run cases'
      &  /'   MSET i  Apply mass file data to stored run case(s)'
-     & //'  .PLOP    Plotting options'
+
      &  /'   NAME s  Specify new configuration name')
 C
 C======================================================================
@@ -216,7 +213,6 @@ C
 C===============================================
       ELSEIF(COMAND.EQ.'QUIT' .OR.
      &       COMAND.EQ.'Q   '      ) THEN
-       CALL PLCLOSE
        STOP
 C
 C===============================================
@@ -287,7 +283,7 @@ C
        LSEN = .FALSE.
 C
 C----- set up plotting parameters for new geometry 
-       CALL PLPARS
+C       CALL PLPARS
 C
 C===============================================
       ELSE IF(COMAND.EQ.'MASS') THEN
@@ -401,11 +397,7 @@ C
        LSEN = .FALSE.
 C
 C===============================================
-      ELSEIF(COMAND.EQ.'PLOP') THEN
-       CALL OPLSET(IDEV,IDEVH,IPSLU,LSVMOV,
-     &             SIZE,PLOTAR,
-     &             XMARG,YMARG,XPAGE,YPAGE,
-     &             CH,SCRNFRAC,LCURS,LCREV)
+
 C
 C===============================================
       ELSEIF(COMAND.EQ.'NAME') THEN
@@ -426,219 +418,7 @@ C
       END ! AVL
 
 
- 
-      SUBROUTINE PLINIT
-C---- Initialize plotting variables
-C
-      INCLUDE 'AVL.INC'
-      INCLUDE 'AVLPLT.INC'
-C
-      REAL RORG(3)
-C
-C---- Plotting flag
-      IDEV = 1   ! X11 window only
-c     IDEV = 2   ! B&W PostScript output file only (no color)
-c     IDEV = 3   ! both X11 and B&W PostScript file
-c     IDEV = 4   ! Color PostScript output file only 
-c     IDEV = 5   ! both X11 and Color PostScript file 
-C
-C---- Re-plotting flag (for hardcopy)
-c     IDEVH = 2    ! B&W PostScript
-      IDEVH = 4    ! Color PostScript
-C
-C---- Movie-plotting flag
-cc    IDEVM = 3    ! B&W PostScript
-      IDEVM = 5   ! both X11 and Color PostScript file 
-C
-      LSVMOV = .FALSE.   ! no movie PS output yet
-C
-C---- PostScript output logical unit and file specification
-ccc   IPSLU = -1  ! output to files plotNNN.ps on LU 80, with NNN = 001, 002, ...
-      IPSLU = 0   ! output to file  plot.ps    on LU 80   (default case)
-ccc   IPSLU = nnn ! output to file  plotNNN.ps on LU NNN
-C
-C---- screen fraction taken up by plot window upon opening
-      SCRNFRAC = 0.70    ! Landscape
-C     SCRNFRAC = -0.85   ! Portrait  specified if < 0
-C
-C---- Default plot size in inches
-C-    (Default plot window is 11.0 x 8.5)
-      SIZE = 9.0
-C
-C---- plot aspect ratio
-      PLOTAR = 0.75
-C
-C---- character width/SIZE
-      CH = 0.017
-C
-      CALL PLINITIALIZE
-C
-      NCOLORS = 0
-C---- set up color spectrum
-ccc      NCOLORS = 32
-ccc      CALL COLORSPECTRUMHUES(NCOLORS,'RYGCBM')
-C
-C---- plot-window dimensions in inches for plot blowup calculations
-C-    currently,  11.0 x 8.5  default window is hard-wired in libPlt
-      XPAGE = 11.0
-      YPAGE = 8.5
-C
-      XWIND = 11.0
-      YWIND = 8.5
-C
-C---- page margins in inches
-      XMARG = 0.0
-      YMARG = 0.0
-C
-C---- bottom,left plot margin from edge
-      PMARG = 0.15
-C
-      IF(IDEV.EQ.0) THEN 
-        LPLOT = .FALSE.
-      ENDIF
-C
 
-C---- set colors for run cases
-      DO IR = 1, NRMAX
-        IRCOLOR(IR) = MOD(IR-1,8) + 3
-      ENDDO
-C
-C---- set vectors for little axes
-      SLEN = 0.5
-      HLEN = 0.5
-C
-      RHEAD = HLEN * 0.25
-      NHEAD = NHAXIS
-C
-      RORG(1) = 0.
-      RORG(2) = 0.
-      RORG(3) = 0.
-      DO IAX = 1, 3
-        UAXDIR(1,IAX) = 0.
-        UAXDIR(2,IAX) = 0.
-        UAXDIR(3,IAX) = 0.
-        UAXDIR(IAX,IAX) = 1.0
-        CALL ARWSET(RORG,UAXDIR(1,IAX),SLEN,HLEN,RHEAD,NHEAD,
-     &                   UAXARW(1,1,1,IAX),NLINAX)
-      ENDDO
-C
-C---- initial phase, eigenvector scale, slo-mo scale (for mode plots)
-      EPHASE = 0.0
-      EIGENF = 1.0
-      SLOMOF = 1.0
-      TMOFAC = 1.0
-
-      RETURN
-      END ! PLINIT
-
-
-
-      SUBROUTINE PLPARS
-      INCLUDE 'AVL.INC'
-      INCLUDE 'AVLPLT.INC'
-C
-C---- Initialize plot flags
-      IMARKSURF = 0
-      ICOLORSURF = 0
-      DO N = 1, NSURF
-        LPLTSURF(N) = .TRUE. 
-      END DO
-      DO N = 1, NBODY
-        LPLTBODY(N) = .TRUE. 
-      END DO
-C
-C---- Scaling factors for velocity and pressure
-      CPFAC = MIN(0.4*CREF,0.1*BREF)  / CREF
-      ENFAC = MIN(0.3*CREF,0.06*BREF) / CREF
-      HNFAC = MIN(CREF,0.5*BREF)      / CREF
-C
-C---- initialize observer position angles and perspective 1/distance
-      AZIMOB = -45.0
-      ELEVOB =  20.0
-      TILTOB =   0.
-      ROBINV = 0.
-C
-C---- slo-mo factor
-      SLOMOF = 1.0
-C
-C---- eigenmode animation integration time step
-      DTIMED = 0.025
-C
-C---- movie-dump frame time step
-      DTMOVIE = 0.05
-C
-C---- max length of movie
-      TMOVIE = 10.0
-C
-C...Flags 
-      LABEL_BODY = .FALSE.
-      LABEL_SURF = .FALSE.
-      LABEL_STRP = .FALSE.
-      LABEL_VRTX = .FALSE.
-      LWAKEPLT   = .FALSE.
-      LHINGEPLT  = .FALSE.
-      LLOADPLT   = .FALSE.
-      LCNTLPTS   = .FALSE.
-      LNRMLPLT   = .FALSE.
-      LAXESPLT   = .TRUE.
-      LRREFPLT   = .TRUE.
-      LCLPERPLT  = .TRUE.
-      LDWASHPLT  = .TRUE.
-      LLABSURF   = .FALSE.
-      LCAMBER    = .FALSE.
-      LCHORDLINE = .TRUE.
-      LBOUNDLEG  = .TRUE.
-C
-C---- Initially assume nothing hidden
-      LHID = .TRUE.
-C
-C---- Initially assume no reverse color output
-      LCREV = .FALSE.
-C
-C---- flags to plot parameter values above eigenmode map
-      DO IP = 1, IPTOT
-        LPPAR(IP) = .FALSE.
-      ENDDO
-
-      LPPAR(IPALFA) = .TRUE.
-      LPPAR(IPBETA) = .TRUE.
-c      LPPAR(IPROTX) = .TRUE.
-c      LPPAR(IPROTY) = .TRUE.
-c      LPPAR(IPROTZ) = .TRUE.
-      LPPAR(IPCL  ) = .TRUE.
-      LPPAR(IPCD0 ) = .TRUE.
-
-      LPPAR(IPPHI ) = .TRUE.
-c      LPPAR(IPTHE ) = .TRUE.
-c      LPPAR(IPPSI ) = .TRUE.
-
-c      LPPAR(IPMACH) = .TRUE.
-      LPPAR(IPVEE ) = .TRUE.
-      LPPAR(IPRHO ) = .TRUE.
-c      LPPAR(IPGEE ) = .TRUE.
-
-      LPPAR(IPRAD ) = .TRUE.
-c      LPPAR(IPFAC ) = .TRUE.
-
-      LPPAR(IPXCG ) = .TRUE.
-c      LPPAR(IPYCG ) = .TRUE.
-      LPPAR(IPZCG ) = .TRUE.
-
-      LPPAR(IPMASS) = .TRUE.
-c      LPPAR(IPIXX ) = .TRUE.
-c      LPPAR(IPIYY ) = .TRUE.
-c      LPPAR(IPIZZ ) = .TRUE.
-c      LPPAR(IPIXY ) = .TRUE.
-c      LPPAR(IPIYZ ) = .TRUE.
-c      LPPAR(IPIZX ) = .TRUE.
-
-c      LPPAR(IPCLA ) = .TRUE.
-c      LPPAR(IPCLU ) = .TRUE.
-c      LPPAR(IPCMA ) = .TRUE.
-c      LPPAR(IPCMU ) = .TRUE.
-
-      RETURN
-      END ! PLPARS
 
 
 

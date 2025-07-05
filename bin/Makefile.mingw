@@ -13,11 +13,11 @@ PROGS = avl
 AOBJS = avl.o aoper.o amode.o amass.o asetup.o \
 amake.o ainput.o aoutput.o aoutmrf.o aero.o atrim.o atpforc.o \
 aic.o cdcl.o airutil.o autil.o aoml.o \
-aplotvl.o aplottp.o aplotmd.o limits.o \
-pltops.o hidden.o \
-plsubs.o \
-userio.o plutil.o arrow3d.o getvm.o \
+limits.o \
+hidden.o \
+userio.o getvm.o \
 spline.o sgutil.o \
+stubs.o \
 second.o
 
 # Original generic matrix solver (slow)
@@ -32,7 +32,6 @@ MLIBS =
 #MLIBS = -lmkl
 
 # libraries needed
-PLTOBJ = ../plotlib/libPlt.a
 EIGOBJ = ../eispack/libeispack.a
 
 ###================================================
@@ -43,7 +42,7 @@ DP =
 DBG =
 LFLG =
 
-PLTLIB = -lX11
+
 FTNLIB =
 #Subroutine SECOND source file
 SECOND = second_g77.f
@@ -95,13 +94,10 @@ EIGOBJ = ../eispack/libeispack.a
 
 # single precision
 DP =
-PLTOBJ = ../plotlib/libPlt.a
 # double precision
 #DP = -fdefault-real-8
-#PLTOBJ = ../plotlib/libPltDP.a
 
 # Windows libraries
-PLTLIB = -lgdi32 -luser32
 #
 # to make static executable
 LFLG = -static
@@ -122,17 +118,17 @@ $(SRC)/AVL.INC: $(SRC)/AINDEX.INC
 	touch $(SRC)/AVL.INC
 
 avl: $(AOBJS) $(MATRIX)
-	$(FC) -o avl $(AOBJS) $(MATRIX) $(ALIBS) $(MLIBS) $(PLTOBJ) $(EIGOBJ) $(PLTLIB) $(LFLG)
+	$(FC) -o avl $(AOBJS) $(MATRIX) $(ALIBS) $(MLIBS) $(EIGOBJ) $(LFLG)
 	$(INSTALLCMD) avl $(BINDIR)
 
 dtest: dtest.o
 	$(FC) -o dtest dtest.o $(LFLG)
 
-avl.o: $(SRC)/avl.f $(SRC)/AVL.INC $(SRC)/AVLPLT.INC
+avl.o: $(SRC)/avl.f $(SRC)/AVL.INC
 	$(FC) -c $(FFLAGS) $(SRC)/avl.f
-aoper.o: $(SRC)/aoper.f $(SRC)/AVL.INC $(SRC)/AVLPLT.INC
+aoper.o: $(SRC)/aoper.f $(SRC)/AVL.INC
 	$(FC) -c $(FFLAGS) $(SRC)/aoper.f
-amode.o: $(SRC)/amode.f $(SRC)/AVL.INC $(SRC)/AVLPLT.INC
+amode.o: $(SRC)/amode.f $(SRC)/AVL.INC
 	$(FC) -c $(FFLAGS) $(SRC)/amode.f
 amass.o: $(SRC)/amass.f $(SRC)/AVL.INC
 	$(FC) -c $(FFLAGS) $(SRC)/amass.f
@@ -158,18 +154,8 @@ atpforc.o: $(SRC)/atpforc.f $(SRC)/AVL.INC
 	$(FC) -c $(FFLAGS) $(SRC)/atpforc.f
 aoml.o: $(SRC)/aoml.f $(SRC)/AVL.INC
 	$(FC) -c $(FFLAGS) $(SRC)/aoml.f
-aplotvl.o: $(SRC)/aplotvl.f $(SRC)/AVL.INC $(SRC)/AVLPLT.INC $(SRC)/MASKS.INC
-	$(FC) -c $(FFLAGS) $(SRC)/aplotvl.f
-aplottp.o: $(SRC)/aplottp.f $(SRC)/AVL.INC $(SRC)/AVLPLT.INC $(SRC)/MASKS.INC
-	$(FC) -c $(FFLAGS) $(SRC)/aplottp.f
-aplotmd.o: $(SRC)/aplotmd.f $(SRC)/AVL.INC $(SRC)/AVLPLT.INC $(SRC)/MASKS.INC
-	$(FC) -c $(FFLAGS) $(SRC)/aplotmd.f
-limits.o: $(SRC)/limits.f $(SRC)/AVL.INC $(SRC)/AVLPLT.INC
+limits.o: $(SRC)/limits.f $(SRC)/AVL.INC
 	$(FC) -c $(FFLAGS) $(SRC)/limits.f
-pltops.o: $(SRC)/pltops.f $(SRC)/AVLPLT.INC
-	$(FC) -c $(FFLAGS) $(SRC)/pltops.f
-plsubs.o: $(SRC)/plsubs.f $(SRC)/AINDEX.INC
-	$(FC) -c $(FFLAGS) $(SRC)/plsubs.f
 hidden.o: $(SRC)/hidden.f
 	$(FC) -c $(FFLAGS) $(SRC)/hidden.f
 matrix.o: $(SRC)/matrix.f
@@ -182,10 +168,7 @@ aic.o: $(SRC)/aic.f
 	$(FC) -c $(FFLAGS) $(SRC)/aic.f
 userio.o: $(SRC)/userio.f
 	$(FC) -c $(FFLAGS) $(SRC)/userio.f
-plutil.o: $(SRC)/plutil.f $(SRC)/MASKS.INC
-	$(FC) -c $(FFLAGS) $(SRC)/plutil.f
-arrow3d.o: $(SRC)/arrow3d.f $(SRC)/MASKS.INC
-	$(FC) -c $(FFLAGS) $(SRC)/arrow3d.f
+
 
 spline.o: $(SRC)/spline.f
 	$(FC) -c $(FFLAGS)  $(SRC)/spline.f
@@ -195,6 +178,9 @@ airutil.o: $(SRC)/airutil.f
 	$(FC) -c $(FFLAGS)  $(SRC)/airutil.f
 autil.o: $(SRC)/autil.f
 	$(FC) -c $(FFLAGS)  $(SRC)/autil.f
+
+stubs.o: $(SRC)/stubs.f
+	$(FC) -c $(FFLAGS) $(SRC)/stubs.f
 
 dtest.o: $(SRC)/dtest.f
 	$(FC) -c $(FFLAGS) $(SRC)/dtest.f

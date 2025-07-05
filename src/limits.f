@@ -24,7 +24,6 @@ C     Finds geometry limits
 C     If LPROJ=T, does projection before finding limits
 C--------------------------------------------------------------
       INCLUDE 'AVL.INC'
-      INCLUDE 'AVLPLT.INC'
       REAL XYZMIN(3), XYZMAX(3)
       LOGICAL LPROJ
 C
@@ -38,7 +37,7 @@ C
       XYZMAX(3) = -1.0E20
 C
       DO N = 1, NSURF
-       IF(LPLTSURF(N)) THEN
+       IF(.TRUE.) THEN
 C
         J1 = JFRST(N)
         JN = JFRST(N) + NJ(N)-1
@@ -63,7 +62,7 @@ C
 C
 C
       DO N = 1, NBODY
-       IF(LPLTBODY(N)) THEN
+       IF(.TRUE.) THEN
 C
         L1 = LFRST(N)
         LN = LFRST(N) + NL(N)-1
@@ -95,7 +94,6 @@ C     Finds rotated,translated geometry limits
 C     If LPROJ=T, does plot projection before finding limits
 C--------------------------------------------------------------
       INCLUDE 'AVL.INC'
-      INCLUDE 'AVLPLT.INC'
       REAL XYZMIN(3), XYZMAX(3)
       LOGICAL LPROJ
       REAL TT(3,3), XYZR(3), DXYZ(3)
@@ -111,7 +109,7 @@ C
       XYZMAX(3) = -1.0E20
 C
       DO N = 1, NSURF
-       IF(LPLTSURF(N)) THEN
+       IF(.TRUE.) THEN
 C
         J1 = JFRST(N)
         JN = JFRST(N) + NJ(N)-1
@@ -151,7 +149,7 @@ C
 C
 C
       DO N = 1, NBODY
-       IF(LPLTBODY(N)) THEN
+       IF(.TRUE.) THEN
 C
         L1 = LFRST(N)
         LN = LFRST(N) + NL(N)-1
@@ -184,7 +182,6 @@ C---------------------------------------------------------
 C     Sets min,max,delta annotations for geometry axes
 C---------------------------------------------------------
       INCLUDE 'AVL.INC'
-      INCLUDE 'AVLPLT.INC'
 C
       DO K = 1, 3
         AXMIN(K) = MIN( GMIN(K) , 0.0 )
@@ -215,7 +212,6 @@ C     If LRESET=T resets NTRI=0 to start accumulating
 C     a new set of triangles
 C-------------------------------------------------------------
       INCLUDE 'AVL.INC'
-      INCLUDE 'AVLPLT.INC'
       LOGICAL LRESET
 C
 C
@@ -224,7 +220,7 @@ C
       IF(LRESET) NTRI = 0
 C
       DO N = 1, NSURF
-       IF(LPLTSURF(N)) THEN
+       IF(.TRUE.) THEN
 C
         J1 = JFRST(N)
         JN = JFRST(N) + NJ(N)-1
@@ -286,7 +282,6 @@ C     If LRESET=T resets NTRI=0 to start accumulating
 C     a new set of triangles
 C-------------------------------------------------------------
       INCLUDE 'AVL.INC'
-      INCLUDE 'AVLPLT.INC'
       LOGICAL LRESET
       REAL ANG(3), POS(3), XYZR(3)
 C
@@ -298,7 +293,7 @@ C
       CALL ROTENS3(ANG,TT,TT_ANG)
 C
       DO N = 1, NSURF
-       IF(LPLTSURF(N)) THEN
+       IF(.TRUE.) THEN
 C
         J1 = JFRST(N)
         JN = JFRST(N) + NJ(N)-1

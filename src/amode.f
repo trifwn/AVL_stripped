@@ -23,11 +23,10 @@ C---------------------------------------------
 C     Flight dynamics analysis driver
 C---------------------------------------------
       INCLUDE 'AVL.INC'
-      INCLUDE 'AVLPLT.INC'
       LOGICAL ERROR, LOK, LWRIT, SAVED, OVERLAY, LOWRIT
 C
       CHARACTER*1 ITEM, ANS, CHKEY
-      CHARACTER*2 OPT, CHPLOT
+      CHARACTER*2 OPT
       CHARACTER*4 COMAND, ITEMC
       CHARACTER*256 FNOUT, FNNEW, FNSYS, FNVB 
       CHARACTER*80 LINE, COMARG, PROMPT, RTNEW
@@ -68,12 +67,11 @@ C---- force computation of plot limits
       FMAX = 0.
 C
 C
-      LPLOT = .FALSE.
       LWRIT = .FALSE.
 C
       FNOUT = ' '
 C
-      CHPLOT = '  '
+
 C
 c      EYEPTZ = 180.
 c      EYEPTY = 90.
@@ -128,8 +126,6 @@ C
  815  CONTINUE
 C------------------------------------------------------
       IF    (COMAND.EQ.'    ') THEN
-       IF(LPLOT) CALL PLEND
-       LPLOT = .FALSE.
        CALL CLRZOOM
        IRUN = IRUN0
        RETURN
@@ -249,7 +245,7 @@ C
 C
  100    CONTINUE
 C
-        CHPLOT = 'P '
+
 C
 C-------------------------------------------------------------------
       ELSEIF(COMAND .EQ. 'P   ') THEN
@@ -267,7 +263,7 @@ C
      &              LPROOT,LPRNUM,OVERLAY,
      &              TMIN,TMAX,TDEL,TFAC,
      &              FMIN,FMAX,FDEL,FFAC )
-        CHPLOT = COMAND(1:2)
+
 C
 C-------------------------------------------------------------------
       ELSEIF(COMAND .EQ. 'X   ') THEN
@@ -278,82 +274,18 @@ C-------------------------------------------------------------------
        GO TO 810
 C
  61    CONTINUE
-       IF(INDEX('P',CHPLOT(1:1)) .EQ. 0) THEN
-C------ make root map plot first
-        XORG0 = 0.0
-        YORG0 = 0.0
-        TMIN = 0.
-        TMAX = 0.
-        FMIN = 0.
-        FMAX = 0.
-        CALL PLEMAP(XORG0,YORG0, 
-     &              IRUN1,IRUN2,
-     &              KEVIEW,IRVIEW,
-     &              LPROOT,LPRNUM,OVERLAY,
-     &              TMIN,TMAX,TDEL,TFAC,
-     &              FMIN,FMAX,FDEL,FFAC )
-       ENDIF
+       WRITE(*,*) 'Plotting not available'
+       GO TO 810
 C
-       WRITE(*,*)
-       WRITE(*,*) 'Click on root of eigenmode to be viewed...'
+
 C
-       CALL GETCURSORXY(XC1,YC1,CHKEY)
-       XE1 = (XC1-XORG0)/TFAC + TMIN
-       YE1 = (YC1-YORG0)/FFAC + FMIN
-C
- 64    CONTINUE
-       IF(XE1 .LT. TMIN .OR. XE1 .GT. TMAX  .OR.
-     &    YE1 .LT. FMIN .OR. YE1 .GT. FMAX       ) THEN
-C------ click was outside of grid... manual input
- 65     RINPUT(1) = 0.
-        RINPUT(2) = 0.
-        WRITE(*,1165) RINPUT(1), RINPUT(2)
- 1165   FORMAT(/' Enter  sigma,omega  of root to be viewed:', 2F12.6)
-        CALL READR(2,RINPUT,ERROR)
-        IF(ERROR) GO TO 65
-C
-        ZCROOT = CMPLX( RINPUT(1) , RINPUT(2) )
-C
-       ELSE
-C------ set root from its symbol-plot coordinates
-        ZCROOT = CMPLX( XE1 , YE1 )
-C
-       ENDIF
-C
-C----- search current roots for one nearest to specified location
-       IR = 0
-       KEIG = 0
-       DIST = 1.0E32
-       DO JR = IRUN1, IRUN2
-         DO K = 1, NEIGEN(JR)
-           DIST1 = ABS( ZCROOT - EVAL(K,JR) )
-           IF(DIST1.LE.DIST) THEN
-            IR = JR
-            KEIG = K
-            DIST = DIST1
-           ENDIF
-         ENDDO
-       ENDDO
-C
-       IF(IR.EQ.0 .OR. KEIG.EQ.0) THEN
-        WRITE(*,*) 'Nearest root not identified'
-        GO TO 810
-       ENDIF
-C
-       CALL PLOTMD(AZIMOB, ELEVOB, TILTOB, ROBINV, KEIG, IR)
-C
-       KEVIEW = KEIG
-       IRVIEW = IR
-C
-       CHPLOT = COMAND(1:2)
+
 C
 C-------------------------------------------------------------------
 C---- Blowup window
       ELSEIF(COMAND.EQ.'B   ') THEN
-       IF(INDEX('P',CHPLOT(1:1)) .EQ. 0) THEN
-        WRITE(*,*) 'No plot to blow up'
-        GO TO 810
-       ENDIF
+       WRITE(*,*) 'Plotting not available'
+       GO TO 810
 C
        DCROSS = 2.0
        WRITE(*,*) 'Mark off corners of blowup area'
@@ -394,18 +326,12 @@ C
 C-------------------------------------------------------------------
 C---- Annotate
       ELSEIF(COMAND.EQ.'A   ') THEN
-       IF(LPLOT) THEN
-        CALL ANNOT(CH)
-       ELSE
-        WRITE(*,*) 'No active plot'
-       ENDIF
+       WRITE(*,*) 'Plotting not available'
 C
 C-------------------------------------------------------------------
 C---- Hardcopy
       ELSEIF(COMAND.EQ.'H   ') THEN
-       IF(LPLOT) CALL PLEND
-       LPLOT = .FALSE.
-       CALL REPLOT(IDEVH)
+       WRITE(*,*) 'Plotting not available'
 C
 C-------------------------------------------------------------------
 C---- Change time integration parameters
@@ -580,10 +506,7 @@ C
         OVERLAY = .TRUE.
         WRITE(*,*) 'Overlay plotting enabled'
 C
-        IF(INDEX('P',CHPLOT(1:1)).NE.0) THEN
-         COMAND = CHPLOT
-         GO TO 815
-        ENDIF
+
 C
        ELSE
         WRITE(*,*) 'Overlay plotting disabled'
@@ -593,19 +516,12 @@ C
 C-------------------------------------------------------------------
 C---- Zoom in on plot
       ELSEIF(COMAND.EQ.'Z   ') THEN
-       IF(INDEX('P',CHPLOT(1:1)) .EQ. 0) THEN
-        WRITE(*,*) 'No plot to zoom'
-        GO TO 810
-       ENDIF
-C
-       CALL USETZOOM(.TRUE.,.TRUE.)
-       CALL REPLOT(IDEV)
+       WRITE(*,*) 'Plotting not available'
 C
 C-------------------------------------------------------------------
 C---- Reset zoom on plot
       ELSEIF(COMAND.EQ.'U   ') THEN
-       CALL CLRZOOM
-       CALL REPLOT(IDEV)
+       WRITE(*,*) 'Plotting not available'
 C
 C-------------------------------------------------------------------
       ELSE

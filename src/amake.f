@@ -488,6 +488,7 @@ C
      &           +     FC *(CHORDR/CHORDC)*CLAFR
 C
 C-------- set chordwise spacing fraction arrays
+                        ! 15  2
           CALL CSPACER(NVC,CSPACE,CLAFC, XPT,XVR,XSR,XCP)
 C
 C-------- go over vortices in this strip
